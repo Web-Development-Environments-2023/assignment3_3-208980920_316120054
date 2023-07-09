@@ -24,7 +24,54 @@
           Username alpha
         </b-form-invalid-feedback>
       </b-form-group>
-
+    <b-form-group
+      id="input-group-firstName"
+      label-cols-sm="3"
+      label="First Name:"
+      label-for="firstName"
+    >
+    <b-form-input
+      id="firstName"
+      v-model="$v.form.firstName.$model"
+      type="text"
+      :state="validateState('firstName')"
+    ></b-form-input>
+    <b-form-invalid-feedback v-if="!$v.form.firstName.required">
+      First Name is required
+    </b-form-invalid-feedback>
+    </b-form-group>
+    <b-form-group
+      id="input-group-lastName"
+      label-cols-sm="3"
+      label="Last Name:"
+      label-for="lastName"
+    >
+    <b-form-input
+      id="lastName"
+      v-model="$v.form.lastName.$model"
+      type="text"
+      :state="validateState('lastName')"
+    ></b-form-input>
+    <b-form-invalid-feedback v-if="!$v.form.lastName.required">
+      Last Name is required
+    </b-form-invalid-feedback>
+    </b-form-group>
+    <b-form-group
+      id="input-group-email"
+      label-cols-sm="3"
+      label="Email:"
+      label-for="email"
+    >
+    <b-form-input
+      id="email"
+      v-model="$v.form.email.$model"
+      type="text"
+      :state="validateState('email')"
+    ></b-form-input>
+    <b-form-invalid-feedback v-if="!$v.form.email.required">
+      Email is required
+    </b-form-invalid-feedback>
+    </b-form-group>
       <b-form-group
         id="input-group-country"
         label-cols-sm="3"
@@ -65,6 +112,12 @@
           v-if="$v.form.password.required && !$v.form.password.length"
         >
           Have length between 5-10 characters long
+        </b-form-invalid-feedback>
+        <b-form-invalid-feedback v-if="!$v.form.password.specialCharacter">
+          Have at least one special character
+        </b-form-invalid-feedback>
+        <b-form-invalid-feedback v-if="!$v.form.password.number">
+          Have at least one number
         </b-form-invalid-feedback>
       </b-form-group>
 
@@ -156,19 +209,34 @@ export default {
         length: (u) => minLength(3)(u) && maxLength(8)(u),
         alpha
       },
+      firstName: {
+        required
+      },
+      lastName: {
+        required
+      },
       country: {
         required
       },
       password: {
         required,
-        length: (p) => minLength(5)(p) && maxLength(10)(p)
+        length: (p) => minLength(5)(p) && maxLength(10)(p),
+        //check if contains at least one speacial character
+        specialCharacter: (value) => /[!@#$%^&*(),.?":{}|<>]/.test(value),
+        //check if contains at least one number
+        number: (value) => /\d/.test(value),
       },
       confirmedPassword: {
         required,
         sameAsPassword: sameAs("password")
-      }
+      },
+      email: {
+        required,
+        email
     }
+  }
   },
+
   mounted() {
     // console.log("mounted");
     this.countries.push(...countries);
@@ -181,13 +249,18 @@ export default {
     },
     async Register() {
       try {
+        console.log("register method called");
         const response = await this.axios.post(
           // "https://test-for-3-2.herokuapp.com/user/Register",
           this.$root.store.server_domain + "/Register",
 
           {
             username: this.form.username,
-            password: this.form.password
+            password: this.form.password,
+            firstName: this.form.firstName,
+            lastName: this.form.lastName,
+            country: this.form.country,
+            email: this.form.email,
           }
         );
         this.$router.push("/login");
@@ -221,6 +294,7 @@ export default {
       });
     }
   }
+
 };
 </script>
 <style lang="scss" scoped>

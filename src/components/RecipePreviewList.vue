@@ -1,16 +1,15 @@
 <template>
   <b-container>
-    <h3>
-      {{ title }}:
-      <slot></slot>
-    </h3>
     <b-row>
-      <b-col v-for="r in recipes" :key="r.id">
-        <RecipePreview class="recipePreview" :recipe="r" />
+      <b-col cols="4" v-for="(r, index) in recipes" :key="r.id">
+        <RecipePreview class="recipePreview" :recipe="r" :isApi="isApi" />
+        <!-- Add a conditional line break after every 3 recipes -->
+        <br v-if="index % 3 === 2 && index !== recipes.length - 1" />
       </b-col>
     </b-row>
   </b-container>
 </template>
+
 
 <script>
 import RecipePreview from "./RecipePreview.vue";
@@ -23,34 +22,44 @@ export default {
     title: {
       type: String,
       required: true
+    },
+    recipes: {
+      type: Array,
+      required: true
+    },
+    isApi: {
+      type: Boolean,
+      required: true,
+      default: false
     }
-  },
-  data() {
-    return {
-      recipes: []
-    };
   },
   mounted() {
-    this.updateRecipes();
+    // this.updateRecipes();
+    console.log(this.recipes);
   },
-  methods: {
-    async updateRecipes() {
-      try {
-        const response = await this.axios.get(
-          this.$root.store.server_domain + "/recipes/random",
-          // "https://test-for-3-2.herokuapp.com/recipes/random"
-        );
+  
+  // mounted() {
+  //   this.recipes
+  //   this.updateRecipes();
+  // },
+  // methods: {
+  //   async updateRecipes() {
+  //     try {
+  //       const response = await this.axios.get(
+  //         this.$root.store.server_domain + "/recipes/random",
+  //         // "https://test-for-3-2.herokuapp.com/recipes/random"
+  //       );
 
-        // console.log(response);
-        const recipes = response.data.recipes;
-        this.recipes = [];
-        this.recipes.push(...recipes);
-        // console.log(this.recipes);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  }
+  //       // console.log(response);
+  //       const recipes = response.data.recipes;
+  //       this.recipes = [];
+  //       this.recipes.push(...recipes);
+  //       // console.log(this.recipes);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // }
 };
 </script>
 

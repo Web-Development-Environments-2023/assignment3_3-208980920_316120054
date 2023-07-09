@@ -1,64 +1,123 @@
 <template>
-  <router-link
-    :to="{ name: 'recipe', params: { recipeId: recipe.id } }"
-    class="recipe-preview"
-  >
-    <div class="recipe-body">
-      <img v-if="image_load" :src="recipe.image" class="recipe-image" />
-    </div>
-    <div class="recipe-footer">
-      <div :title="recipe.title" class="recipe-title">
-        {{ recipe.title }}
+    <div class="containertal">
+    <div class="recipe-preview">
+      <router-link
+        :to="{ name: 'recipe', params: { recipeId: recipe.recipeId } }"
+        class="recipe-image-container" 
+      >
+        <img :src="recipe.image" @error="handelImageError" class="recipe-image" />
+      </router-link>
+      <div class="recipe-details">
+        <div title="To full info" class="recipe-title">
+          <router-link
+            :to="{ name: 'recipe', params: { recipeId: recipe.recipeId } }"
+            class="title-link" 
+          >
+            {{ recipe.title }}
+          </router-link>
+        </div>
+  
+        <div class="tag-container">
+          <i
+            v-if="recipe.vegetarian"
+            class="fas fa-leaf vegetarian-tag"
+            title="Vegetarian"
+          ></i>
+          <i
+            v-else
+            class="fas fa-bacon non-vegetarian-tag"
+            title="Non Vegetarian"
+          ></i>
+          <i
+            v-if="recipe.vegan"
+            class="fas fa-seedling vegan-tag"
+            title="Vegan"
+          ></i>
+          <i
+            v-else
+            class="fas fa-egg non-vegan-tag"
+            title="Non Vegan"
+          ></i>
+          <i
+            v-if="recipe.glutenFree"
+            class="fas fa-seedling gluten-free-tag"
+            title="Gluten Free"
+          ></i>
+          <i
+            v-else
+            class="fas fa-times-circle not-gluten-free-tag"
+            title="Not Gluten Free"
+          ></i>
+        </div>
       </div>
-      <ul class="recipe-overview">
-        <li>{{ recipe.readyInMinutes }} minutes</li>
-        <li>{{ recipe.aggregateLikes }} likes</li>
-      </ul>
+      <div class="recipe-details">
+        <ul class="recipe-overview">
+          <li><i class="fa-solid fa-clock"></i> {{ recipe.readyInMinutes }} minutes</li>
+          <li><i class="fa-solid fa-thumbs-up"></i> {{ recipe.popularity }}</li>
+          <li v-if="isApi && recipe.favorite" title="saved as favorite"><i class="fa-solid fa-star"></i></li>
+          <li v-else-if="isApi && !recipe.favorite"><i @click="addToFavorite" class="fa-regular fa-star unfavorite" title="unfavorite"></i></li> 
+          <li v-if="recipe.viewed" title="viewed"><i class="fa-regular fa-eye"></i></li>
+          <li v-else><i class="fa-regular fa-eye-slash" title="not viewed"></i></li>
+        </ul>
+      </div>
     </div>
-  </router-link>
+  </div>
 </template>
 
 <script>
+import 'bootstrap/dist/css/bootstrap.css';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faLeaf, faBacon, faSeedling, faEgg } from '@fortawesome/free-solid-svg-icons';
+
+// Register the icons
+library.add(faLeaf, faBacon, faSeedling, faEgg);
+
 export default {
-  mounted() {
-    this.axios.get(this.recipe.image).then((i) => {
-      this.image_load = true;
-    });
-  },
-  data() {
+  data(){
     return {
-      image_load: false
-    };
+      defualtImage: "https://th.bing.com/th/id/OIP.DB6nJ3r-5ucZvWBBflZ0mQHaCr?pid=ImgDet&rs=1",
+    }
   },
+  methods:{
+  
+    handelImageError(e){
+      e.target.src = this.defualtImage;
+    },
+    async addToFavorite(){
+      this.favorite = true;
+      try {
+        console.log("add to favorite method called");
+        console.log(this.recipe);
+        if(this.recipe.id == undefined){
+          this.recipe.id = this.recipe.recipeId;
+        }
+
+        const response = await this.axios.post(
+          // "https://test-for-3-2.herokuapp.com/user/Register",
+          this.$root.store.server_domain + "/users/favorites",
+          {
+            recipeId: this.recipe.id,
+          }
+        );
+        console.log(response);
+        if (response.status == 200)
+          this.recipe.favorite = true;
+      } catch (err) {
+        console.log(err.response);
+      }
+    },
+  },
+
   props: {
     recipe: {
       type: Object,
       required: true
+    },
+    isApi: {
+      type: Boolean,
+      required: true
     }
 
-    // id: {
-    //   type: Number,
-    //   required: true
-    // },
-    // title: {
-    //   type: String,
-    //   required: true
-    // },
-    // readyInMinutes: {
-    //   type: Number,
-    //   required: true
-    // },
-    // image: {
-    //   type: String,
-    //   required: true
-    // },
-    // aggregateLikes: {
-    //   type: Number,
-    //   required: false,
-    //   default() {
-    //     return undefined;
-    //   }
-    // }
   }
 };
 </script>
@@ -70,72 +129,118 @@ export default {
   height: 100%;
   position: relative;
   margin: 10px 10px;
+  color: #154658; /* Set text color to black */
 }
+
 .recipe-preview > .recipe-body {
   width: 100%;
-  height: 200px;
+  height: 100%;
   position: relative;
 }
 
-.recipe-preview .recipe-body .recipe-image {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: auto;
-  margin-bottom: auto;
-  display: block;
-  width: 98%;
-  height: auto;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  background-size: cover;
-}
-
-.recipe-preview .recipe-footer {
+.recipe-preview .recipe-image-container {
   width: 100%;
   height: 50%;
-  overflow: hidden;
+  position: relative;
+}
+
+.recipe-preview .recipe-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.recipe-preview .tag-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.recipe-preview .tag-container i {
+  font-size: 18px;
+  margin-left: 5px;
+}
+
+.recipe-preview .vegetarian-tag {
+  color: green; /* Set color to green for vegetarian */
+}
+
+.recipe-preview .non-vegetarian-tag {
+  color: red; /* Set color to red for non-vegetarian */
+}
+
+.recipe-preview .vegan-tag {
+  color: blue; /* Set color to blue for vegan */
+}
+
+.recipe-preview .non-vegan-tag {
+  color: orange; /* Set color to orange for non-vegan */
+}
+
+.recipe-preview .gluten-free-tag {
+  color: green; /* Set color to green for gluten-free */
+}
+
+.recipe-preview .not-gluten-free-tag {
+  color: red; /* Set color to red for not gluten-free */
+}
+
+.recipe-preview .recipe-details {
+  width: 100%;
+  height: 50%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.title-link{
+  font-size: 1.5rem;
+  color: #154658;
+  ; 
+}
+.recipe-title{
+  transition: transform 0.3s ease-in-out
+}
+.recipe-title:hover{
+  transform: scale(1.1);
+  cursor: pointer;
 }
 
 .recipe-preview .recipe-footer .recipe-title {
-  padding: 10px 10px;
-  width: 100%;
   font-size: 12pt;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
-  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
 }
 
 .recipe-preview .recipe-footer ul.recipe-overview {
   padding: 5px 10px;
   width: 100%;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  -o-box-flex: 1;
-  box-flex: 1;
-  -webkit-flex: 1 auto;
-  -ms-flex: 1 auto;
-  flex: 1 auto;
   table-layout: fixed;
   margin-bottom: 0px;
 }
 
 .recipe-preview .recipe-footer ul.recipe-overview li {
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  -o-box-flex: 1;
-  -ms-box-flex: 1;
-  box-flex: 1;
-  -webkit-flex-grow: 1;
   flex-grow: 1;
   width: 90px;
   display: table-cell;
   text-align: center;
+}
+.recipe-preview .recipe-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: opacity 0.3s ease-in-out; /* Add transition effect */
+}
+
+.recipe-preview .recipe-image:hover {
+  opacity: 0.7; /* Reduce opacity on hover */
+}
+.unfavorite{
+  transition: transform 0.3s ease-in-out; 
+}
+.unfavorite:hover{
+  transform: scale(1.5);
+  cursor: pointer;
 }
 </style>
