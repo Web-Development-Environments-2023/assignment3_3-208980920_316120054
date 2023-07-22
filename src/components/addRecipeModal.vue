@@ -74,11 +74,9 @@ export default {
         console.log("add recipe method called");
         console.log(this.recipe)
         const response = await this.axios.post(
-          // "https://test-for-3-2.herokuapp.com/user/Register",
           this.$root.store.server_domain + "/users/CreateRecipe",
 
           {
-            //user_id: req.session.user_id,
             title: this.recipe.title,
             instruction:this.recipe.instructions,
             vegetarian: this.recipe.vegetarian,
@@ -104,12 +102,6 @@ export default {
       }
     },
     onAddRecipe() {
-      // console.log("register method called");
-      // this.$v.form.$touch();
-      // if (this.$v.form.$anyError) {
-      //   return;
-      // }
-      // console.log("register method go");
       this.AddRecipe();
     },
     
@@ -118,7 +110,6 @@ export default {
 </script>
 
 <style scoped>
-  /* Apply styles to the form container */
   .form-container {
     max-width: 400px;
     margin: 0 auto;
@@ -127,14 +118,12 @@ export default {
     border-radius: 5px;
   }
 
-  /* Style form labels */
   label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
   }
 
-  /* Style form inputs */
   input[type="text"],
   textarea,
   input[type="number"]
@@ -146,12 +135,11 @@ export default {
     box-sizing: border-box;
     margin-bottom: 10px;
   }
-    /* Style checkboxes */
     input[type="checkbox"] {
-    margin-left: 10px; /* Add some spacing between label and checkbox */
+    margin-left: 10px; 
   }
 
-  /* Style form submit button */
+  
   button[type="submit"] {
     background-color: #4CAF50;
     color: white;
@@ -164,7 +152,6 @@ export default {
     display: block;
   }
 
-  /* Add hover effect to the submit button */
   button[type="submit"]:hover {
     background-color: #45a049;
   }

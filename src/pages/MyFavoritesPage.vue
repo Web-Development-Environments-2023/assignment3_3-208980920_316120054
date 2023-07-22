@@ -1,8 +1,10 @@
 <template>
   <div>
     <h1 class="title">My Favorites</h1>
-    <RecipePreviewList :recipes="recipes" :title="title" :isApi="false"></RecipePreviewList>
-
+    <RecipePreviewList v-if="this.recipes.length>0" :recipes="this.recipes" :isApi="false"></RecipePreviewList>
+    <div v-else>
+      <h3>No recipes found</h3>
+    </div>
   </div>
 </template>
 
@@ -28,11 +30,9 @@ export default {
               const response = await this.axios.get(
                 this.$root.store.server_domain + "/users/favorites"
                 );
-              console.log(response);
               const recipes = response.data;
               this.recipes = [];
               this.recipes.push(...recipes);
-              // console.log(this.recipes);
             } catch (error) {
               console.log(error);
             }

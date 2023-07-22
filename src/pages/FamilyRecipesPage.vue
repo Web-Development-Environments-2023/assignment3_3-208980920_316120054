@@ -1,14 +1,46 @@
 <template>
     <div>
-        <h1>Family Recipes</h1>
-        <svg @click="addToFavorite" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
-        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
-</svg>
+        <h1 class="title">My Family Recipes</h1>
+        <RecipePreviewList v-if="this.recipes.length>0" :recipes="this.recipes" :isApi="false"></RecipePreviewList>
+        <div v-else>
+        <h3>No recipes found</h3>
+        </div>
+
     </div>
 </template>
 
 <script>
+import RecipePreviewList from "../components/RecipePreviewList.vue";
+export default {
+  name: "FamilyRecipes",
+    components: {
+        RecipePreviewList
+    },
+    data(){
+        return {
+            recipes: [],
+            title: "My Recipes",
+        }
+    },
+    mounted() {
+        this.updateRecipes();
+    },
+    methods:{
+        async updateRecipes() {
+            try {
+              const response = await this.axios.get(
+                this.$root.store.server_domain + "/users/get_family_recipes"
+                );
+              const recipes = response.data;
+              this.recipes = [];
+              this.recipes.push(...recipes);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+    }
 
+}
 </script>
 
 <style>

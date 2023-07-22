@@ -28,11 +28,9 @@ export default {
                 this.$root.store.server_domain + "/users/MyRecipes",
                 {
                 });
-                console.log(response);
               const recipes = response.data;
               this.recipes = [];
               this.recipes.push(...recipes);
-              // console.log(this.recipes);
             } catch (error) {
               console.log(error);
             }

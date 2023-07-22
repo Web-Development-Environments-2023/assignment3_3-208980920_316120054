@@ -2,20 +2,20 @@
     <div class="containertal">
     <div class="recipe-preview">
       <router-link
-        :to="{ name: 'recipe', params: { recipeId: recipe.recipeId } }"
-        class="recipe-image-container" 
+        :to="{ name: 'recipe', params: { recipeId: this.recipe.id } }"
+        class="recipe-image-container" @click.native="addToViewed"
       >
         <img :src="recipe.image" @error="handelImageError" class="recipe-image" />
       </router-link>
       <div class="recipe-details">
         <div title="To full info" class="recipe-title">
           <router-link
-            :to="{ name: 'recipe', params: { recipeId: recipe.recipeId } }"
-            class="title-link" 
+            :to="{ name: 'recipe', params: { recipeId: this.recipe.id } }"
+            class="title-link" @click.native="addToViewed"
           >
             {{ recipe.title }}
           </router-link>
-        </div>
+      </div>
   
         <div class="tag-container">
           <i
@@ -25,7 +25,7 @@
           ></i>
           <i
             v-else
-            class="fas fa-bacon non-vegetarian-tag"
+            class="fa-solid fa-cow non-vegetarian-tag"
             title="Non Vegetarian"
           ></i>
           <i
@@ -40,25 +40,26 @@
           ></i>
           <i
             v-if="recipe.glutenFree"
-            class="fas fa-seedling gluten-free-tag"
+            class="fa solid fa-wheat-awn gluten-free-tag"
             title="Gluten Free"
           ></i>
           <i
             v-else
-            class="fas fa-times-circle not-gluten-free-tag"
+            class="fa solid fa-wheat-awn-circle-exclamation not-gluten-free-tag"
             title="Not Gluten Free"
           ></i>
-        </div>
+        
       </div>
       <div class="recipe-details">
         <ul class="recipe-overview">
           <li><i class="fa-solid fa-clock"></i> {{ recipe.readyInMinutes }} minutes</li>
           <li><i class="fa-solid fa-thumbs-up"></i> {{ recipe.popularity }}</li>
-          <li v-if="isApi && recipe.favorite" title="saved as favorite"><i class="fa-solid fa-star"></i></li>
-          <li v-else-if="isApi && !recipe.favorite"><i @click="addToFavorite" class="fa-regular fa-star unfavorite" title="unfavorite"></i></li> 
+          <li v-if="isApi && recipe.favorite && $root.store.username" title="saved as favorite"><i class="fa-solid fa-star"></i></li>
+          <li v-else-if="isApi && !recipe.favorite && $root.store.username"><i @click="addToFavorite" class="fa-regular fa-star unfavorite" title="unfavorite"></i></li> 
           <li v-if="recipe.viewed" title="viewed"><i class="fa-regular fa-eye"></i></li>
           <li v-else><i class="fa-regular fa-eye-slash" title="not viewed"></i></li>
         </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -79,15 +80,22 @@ export default {
     }
   },
   methods:{
-  
+    async addToViewed(){
+      if(this.$root.store.username){
+      const res = await this.axios.post(
+        this.$root.store.server_domain + "/users/add_to_viewed",
+        {
+           id: this.recipe.id
+        }
+      );
+      }
+    },
     handelImageError(e){
       e.target.src = this.defualtImage;
     },
     async addToFavorite(){
       this.favorite = true;
       try {
-        console.log("add to favorite method called");
-        console.log(this.recipe);
         if(this.recipe.id == undefined){
           this.recipe.id = this.recipe.recipeId;
         }
@@ -99,7 +107,6 @@ export default {
             recipeId: this.recipe.id,
           }
         );
-        console.log(response);
         if (response.status == 200)
           this.recipe.favorite = true;
       } catch (err) {
@@ -125,11 +132,14 @@ export default {
 <style scoped>
 .recipe-preview {
   display: inline-block;
-  width: 90%;
+  width: 70%;
   height: 100%;
   position: relative;
   margin: 10px 10px;
-  color: #154658; /* Set text color to black */
+  color: #154658; 
+  border: 1px solid #ccc;
+  border-radius: 10px; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); 
 }
 
 .recipe-preview > .recipe-body {
@@ -140,15 +150,11 @@ export default {
 
 .recipe-preview .recipe-image-container {
   width: 100%;
-  height: 50%;
+  height: 30%;
   position: relative;
 }
 
-.recipe-preview .recipe-image {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
+
 
 .recipe-preview .tag-container {
   position: absolute;
@@ -162,27 +168,27 @@ export default {
 }
 
 .recipe-preview .vegetarian-tag {
-  color: green; /* Set color to green for vegetarian */
+  color: green; 
 }
 
 .recipe-preview .non-vegetarian-tag {
-  color: red; /* Set color to red for non-vegetarian */
+  color: rgb(49, 7, 7); 
 }
 
 .recipe-preview .vegan-tag {
-  color: blue; /* Set color to blue for vegan */
+  color: rgb(89, 89, 235); 
 }
 
 .recipe-preview .non-vegan-tag {
-  color: orange; /* Set color to orange for non-vegan */
+  color: rgb(222, 209, 186); 
 }
 
 .recipe-preview .gluten-free-tag {
-  color: green; /* Set color to green for gluten-free */
+  color: green; 
 }
 
 .recipe-preview .not-gluten-free-tag {
-  color: red; /* Set color to red for not gluten-free */
+  color: rgb(231, 175, 122);
 }
 
 .recipe-preview .recipe-details {
@@ -200,7 +206,7 @@ export default {
   transition: transform 0.3s ease-in-out
 }
 .recipe-title:hover{
-  transform: scale(1.1);
+  transform: scale(1.05);
   cursor: pointer;
 }
 
@@ -226,15 +232,16 @@ export default {
   display: table-cell;
   text-align: center;
 }
+
 .recipe-preview .recipe-image {
   width: 100%;
-  height: auto;
+  height: 50%;
   object-fit: cover;
-  transition: opacity 0.3s ease-in-out; /* Add transition effect */
+  transition: opacity 0.3s ease-in-out; 
 }
 
 .recipe-preview .recipe-image:hover {
-  opacity: 0.7; /* Reduce opacity on hover */
+  opacity: 0.7; 
 }
 .unfavorite{
   transition: transform 0.3s ease-in-out; 

@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <h1 class="title">Search Page</h1>
     <form class="form-inline">
       <div class="form-group mx-sm-3 mb-2">
         <label for="searchInput" class="sr-only">Search</label>
@@ -36,7 +35,7 @@
     <span v-if="!searched" @click = "SearchLast" class="clicklastsearch" title = "Include last filters">Last search: {{ this.lastQuery.charAt(0).toUpperCase()+this.lastQuery.slice(1) }}</span> 
     </div>
     <div v-if = "searched">
-      <b-dropdown  text="Sort by" variant="primary" class="filter-dropdown">
+      <b-dropdown  text="Sort by" variant="success" class="filter-dropdown">
         <div class="sort-section">
           <label class="sort-label">Sort by:</label>
           <b-form-select v-model="selectedOptionsSort" :options="this.sort_by" class="filter-select"></b-form-select>
@@ -44,7 +43,7 @@
         <button @click="sort_recipes" type="submit"> apply</button>
       </b-dropdown>
     </div>
-    <RecipePreviewList v-if= "!emptyRecipes" :title="titles"  :recipes="recipes" :isApi="true"></RecipePreviewList>
+    <RecipePreviewList v-if= "!emptyRecipes" :recipes="recipes" :isApi="true"></RecipePreviewList>
     
       
 
@@ -80,13 +79,12 @@ export default({
       lastQuery: "",
       diets: [],
       cuisines: [],
-      numberofresults: 1,
+      numberofresults: 5,
       intolerances: [],
       selectedOptionsCuisines: [],
       selectedOptionsDiets: [],
       selectedOptionsIntolerances: [],
       recipes: [],
-      titles:"Founded Recipes",
       emptyRecipes: false,
       searched: false,
       sort_by: ["Popularity: low to high", "Popularity: high to low", "Preperation time: low to high", "Preperation time: high to low"],
@@ -94,7 +92,8 @@ export default({
     };
   },
   created(){
-    this.lastQuery = Cookies.get("lastSearch").substring(2,Cookies.get("lastSearch").length-2);
+    if (Cookies.get("lastSearch") != undefined)
+      this.lastQuery = Cookies.get("lastSearch").substring(2,Cookies.get("lastSearch").length-2);
   },
   mounted() {
    
@@ -172,15 +171,11 @@ export default({
               cuisine: cuisines,
               intolerances: intolerances,
               numberofresults: this.numberofresults,
-              //diet: this.form.diet,
-              //  cuisine: this.form.cuisine,
-              //  intolerances: this.form.intolerances,
+
             },
           }
           );
-          console.log(response);
           this.recipes = response.data;
-          console.log(this.recipes);
           if (this.recipes.length == 0){
             this.emptyRecipes = true;
             this.searched = false;
@@ -256,7 +251,6 @@ export default({
 .filterButton:focus {
   background-color: #1aa508;
   border-color: #1aa508;
-  /* box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset, rgba(46, 54, 80, 0.075) 0 1px 1px, rgba(104, 101, 235, 0.5) 0 0 0 .2rem; */
 }
 
 .filterButton:active {
@@ -281,9 +275,13 @@ export default({
 .filter-select {
   width: 100%;
 }
+.clicklastsearch{
+  margin-right:3rem;
+}
 .clicklastsearch:hover{
   cursor: pointer;
   text-decoration: underline;
+  
 }
 .title{
   text-align: center;
@@ -300,8 +298,8 @@ export default({
   border-radius: 50px;
 }
 .spancontainer{
-  text-align: left;
-  margin-left: 19vw;
+  align-items: left;
+  margin-left: 18rem;
   margin-top: 1vh;
 
 }
@@ -346,7 +344,6 @@ export default({
 .button-20:focus {
   background-color: #1aa508;
   border-color: #1aa508;
-  /* box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset, rgba(46, 54, 80, 0.075) 0 1px 1px, rgba(104, 101, 235, 0.5) 0 0 0 .2rem; */
 }
 
 .button-20:active {
