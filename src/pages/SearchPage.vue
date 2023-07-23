@@ -115,6 +115,7 @@ export default({
       dropdown.hide();
     },
     sort_recipes(){
+      console.log(this.recipes,this.selectedOptionsSort);
       if (this.selectedOptionsSort=="Popularity: low to high"){
         this.recipes.sort(function(a,b){
           return a.popularity-b.popularity;
@@ -153,12 +154,15 @@ export default({
     },
     async Search() {
         try {
+          console.log("search method called");
           const cuisines = this.get_string_from_list(this.selectedOptionsCuisines);
           const diets = this.get_string_from_list(this.selectedOptionsDiets);
           const intolerances = this.get_string_from_list(this.selectedOptionsIntolerances);
+          console.log(cuisines,diets,intolerances,this.numberofresults)
           
 
           const response = await this.axios.get(
+            // "https://test-for-3-2.herokuapp.com/user/Register",
             this.$root.store.server_domain + "/recipes/search",
             {
             params: {
@@ -184,7 +188,7 @@ export default({
 
           
         } catch (err) {
-          // console.log(err.response);
+          console.log(err.response);
           this.form.submitError = err.response.data.message;
         }
       }
@@ -206,6 +210,40 @@ export default({
   display: block;
   margin-bottom: 5px;
 }
+
+.filter-select {
+  width: 100%;
+}
+.clicklastsearch{
+  margin-right:3rem;
+}
+.clicklastsearch:hover{
+  cursor: pointer;
+  text-decoration: underline;
+  
+}
+.title{
+  text-align: center;
+  margin-top: 5vh;
+  
+}
+.form-inline{
+  display: flex;
+  justify-content: center;
+  margin-top: 10vh;
+}
+.form-control{
+  width: 30vw;
+  border-radius: 50px;
+}
+.spancontainer{
+  align-items: left;
+  margin-left: 18rem;
+  margin-top: 1vh;
+
+}
+
+
 .button-20 {
   background-color: #42b983;
   border: none; 
@@ -224,7 +262,5 @@ export default({
   padding:0.5vh;
   margin-bottom:1vh;
 }
-.btn{
-  color: white;
-}
+
 </style>
