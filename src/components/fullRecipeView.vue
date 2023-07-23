@@ -17,7 +17,13 @@
             <div v-if="recipe.glutenFree" class="icon"><i class="fa solid fa-wheat-awn gluten-free-tag" title="Gluten Free"></i></div>
             <div v-else class="icon"><i class="fa solid fa-wheat-awn-circle-exclamation" title="Not Gluten Free"></i></div>
         </div>
+        <div v-if="this.recipe.owner">
+          <p>Recipe by <strong>{{ this.recipe.owner}}</strong></p>
+        </div>
         <img :src="recipe.image" @error="handelImageError" class="recipe-image" />
+        <div class="timeRecommended" v-if="this.recipe.owner">
+            <p><strong>The recommendation for preparing the recipe is at the following events - {{ this.recipe.appointed_time }}</strong></p>
+        </div>
         <ingredientsComp :ingredients="recipe.ingredients"></ingredientsComp>
         <instructionsComp class="insructionsClass" :instructions="recipe.instructions"></instructionsComp>
 
@@ -45,8 +51,6 @@ export default {
         async addToFavorite(){
             this.favorite = true;
             try {
-                console.log("add to favorite method called");
-                console.log(this.recipe);
                 if(this.recipe.id == undefined){
                 this.recipe.id = this.recipe.recipeId;
                 }
@@ -58,11 +62,10 @@ export default {
                     recipeId: this.recipe.id,
                 }
                 );
-                console.log(response);
                 if (response.status == 200)
                 this.recipe.favorite = true;
             } catch (err) {
-                console.log(err.response);
+                // console.log(err.response);
             }
     },
     }
@@ -124,6 +127,13 @@ export default {
   align-items: center;
 }
 .insructionsClass {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    width: 100%;
+    max-width: 800px;
+  }
+  .timeRecommended{
     display: flex;
     flex-direction: column;
     align-items: flex-start; 

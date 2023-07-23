@@ -53,6 +53,7 @@
  
  <script>
 import { Modal } from 'bootstrap';
+import Cookies from "js-cookie";
 import AddRecipeModal from './components/addRecipeModal.vue';
 
  export default {
@@ -65,7 +66,10 @@ import AddRecipeModal from './components/addRecipeModal.vue';
    },
    methods: {
      async Logout() {
-       console.log(this.$root.store);
+      if (Cookies.get("lastSearch")) {
+        const lastSearchValue = Cookies.get("lastSearch");
+        Cookies.remove("lastSearch");
+    }
        this.$root.store.logout();
        this.$root.toast("Logout", "User logged out successfully", "success");
        try {
@@ -78,7 +82,7 @@ import AddRecipeModal from './components/addRecipeModal.vue';
          this.$forceUpdate();
        });
      }catch (err) {
-       console.log(err.response);
+      //  console.log(err.response);
      }
      },
      toggleModal() {

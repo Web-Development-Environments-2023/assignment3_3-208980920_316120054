@@ -16,28 +16,44 @@ export default {
   data() {
     return {
       recipe: null,
+      id:null
       
     };
   },
-  async mounted() {
-    try {
-      console.log("created function in view recipe page");
+   created() {
+    
+    
+  },
+   async mounted(){
+   await this.getRecipeDetails();
+    
+  },
+  methods:{
+    async getRecipeDetails(){
+      try {
       let response;
-      console.log("this.$route ", this.$route);
+      if(typeof this.$route.params.recipeId ==="number" ){
         response = await this.axios.get(
-          // "https://test-for-3-2.herokuapp.com/recipes/info",
           this.$root.store.server_domain + `/recipes/${this.$route.params.recipeId}`,
+
         );
-      this.recipe = response.data;
-      console.log(response.data)
-     if (response.status !== 200) this.$router.replace("/NotFound");
       
+      this.recipe = response.data;
+      }
+      else{
+        this.recipe = this.$route.params.recipeId;
+      }
+      if(this.recipe == null || this.recipe == undefined){
+        this.$route.replace("/NotFound");
+      }
       } catch (error) {
-        console.log("error.response.status", error.response.status);
         this.$router.replace("/NotFound");
         return;
       }
-      
+
+    }
+
+
   }
 };
 </script>

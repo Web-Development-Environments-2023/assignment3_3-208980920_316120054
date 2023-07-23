@@ -71,8 +71,6 @@ export default {
   methods: {
     async AddRecipe() {
       try {
-        console.log("add recipe method called");
-        console.log(this.recipe)
         const response = await this.axios.post(
           this.$root.store.server_domain + "/users/CreateRecipe",
 
@@ -93,20 +91,35 @@ export default {
       alert("Recipe added successfully!");
       //close the modal when I click on ok
       this.$emit("formSubmitted")
-      
-      
     
       } catch (err) {
-        console.log(err.response);
-        this.form.submitError = err.response.data.message;
+        this.reset();
+        alert("There is a problem with the recipe's data");
+        
       }
     },
     onAddRecipe() {
       this.AddRecipe();
     },
-    
+    reset(){
+      this.recipe = {
+        title: '',
+        readyInMinutes: 0,
+        image: '',
+        vegan: false,
+        vegetarian: false,
+        glutenFree: false,
+        viewed: 0,
+        favorite: false,
+        servings: 0,
+        instructions: '',
+        ingredients: ''
+    }
   }
+  }
+
 };
+
 </script>
 
 <style scoped>

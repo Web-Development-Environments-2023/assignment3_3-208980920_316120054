@@ -1,10 +1,11 @@
 <template>
     <div>
         <h1 class="title">My Family Recipes</h1>
-        <RecipePreviewList v-if="this.recipes.length>0" :recipes="this.recipes" :isApi="false"></RecipePreviewList>
-        <div v-else>
-        <h3>No recipes found</h3>
-        </div>
+        <RecipePreviewList v-if="this.recipes.length>0" :recipes="this.recipes" :isApi="false" :isMyPage="true"></RecipePreviewList>
+        <div class="notfoundrecipes" v-else>
+        <h3 >No recipes found</h3>
+        <div>no family recipes found. Ask you grandma and send as an email ;)</div>
+      </div>
 
     </div>
 </template>
@@ -35,7 +36,7 @@ export default {
               this.recipes = [];
               this.recipes.push(...recipes);
             } catch (error) {
-              console.log(error);
+              // console.log(error);
             }
           }
     }
@@ -45,4 +46,10 @@ export default {
 
 <style>
 
+.notfoundrecipes{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 </style>

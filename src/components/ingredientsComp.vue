@@ -1,9 +1,14 @@
 <template>
     <div class="container">
         <h3>Ingredients</h3>
-        <div>
+        <div v-if = "isObject" >
             <ul class="ingredient-list">
-                <li class="bullet" v-for="(ingredient,index) in ingredients" :key="index"> <strong>{{ index.charAt(0).toUpperCase()+index.slice(1) }}</strong>: {{ ingredient }}</li>
+                <li class="bullet" v-for="(ingredient,index) in total_ingredients" :key="index"> <strong>{{ index.charAt(0).toUpperCase()+index.slice(1) }}</strong>: {{ ingredient }}</li>
+            </ul>
+        </div>
+        <div v-else >
+            <ul class="ingredient-list">
+                <li class="bullet" v-for="(ingredient,index) in total_ingredients" :key="index"> {{ ingredient }}</li>
             </ul>
         </div>
     </div>
@@ -11,12 +16,27 @@
 
 <script>
 export default {
+    data(){
+        return {
+        isObject:true,
+        total_ingredients:[],
+        }
+    },
 props: {
     ingredients: {
         type: Object,
         required: true
     }
 },
+mounted(){
+    if (typeof this.ingredients === "string"){
+        this.isObject = false;
+        this.total_ingredients = this.ingredients.split(",");
+    }
+    else{
+        this.total_ingredients = this.ingredients
+    }
+}
 
 }
 </script>
@@ -34,10 +54,13 @@ props: {
 .bullet::marker{
     color:#42b983;
 }
+.bullet{
+    justify-content: space-between;
+}
 .ingredient-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr); 
-  gap: 10px; 
+  gap: 20px; 
   padding: 0; 
   margin:1rem;
 

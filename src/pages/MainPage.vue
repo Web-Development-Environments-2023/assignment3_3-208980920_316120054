@@ -20,8 +20,8 @@
               <LoginCard ></LoginCard>
             </div>
             <div v-else>
-              <h3 class="MainTitle">My last Viewed Recipes</h3>
-              <RecipePreviewList title="Last Viewed Recipes" :isMainPage="true" :recipes="viewed_recipes" :isApi="true"/>
+              <h3 class="MainTitle">My Last Viewed Recipes</h3>
+              <RecipePreviewList :isMainPage="true" :recipes="viewed_recipes" :isApi="false"/>
             </div>
           </b-col>
           
@@ -50,6 +50,9 @@ export default {
     this.RandomRecipes();
     this.getLastViewed();
   },
+  computed(){
+    this.getLastViewed();
+  },
   methods: {
     async RandomRecipes() {
       try {
@@ -62,7 +65,7 @@ export default {
         this.recipes = [];
         this.recipes.push(...recipes);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     },
     async getLastViewed(){
@@ -75,7 +78,7 @@ export default {
         this.viewed_recipes = [];
         this.viewed_recipes.push(...recipes);
       }catch(error){
-        console.log(error);
+        // console.log(error);
       }
     }
   }
@@ -87,7 +90,7 @@ export default {
   margin-right:  100px ;
 }
 .MainTitle{
-  margin-left:3rem;
+  margin-left:1.2rem;
 }
 .blur {
   -webkit-filter: blur(5px); 
@@ -117,8 +120,8 @@ export default {
   background-color: #42b983; 
   border: none; 
   color: white; 
-  margin-left:5rem;
-  width: 50%; 
+  margin-left:2.5rem;
+  width: 40%; 
   border-radius: 3rem;
 
 }
@@ -127,5 +130,10 @@ export default {
 }
 .btn-primary:hover {
   background-color: #2b7a4b; 
+}
+.row{
+  margin-bottom: 10px;
+  margin-left:0px;
+  margin-right:0px;
 }
 </style>

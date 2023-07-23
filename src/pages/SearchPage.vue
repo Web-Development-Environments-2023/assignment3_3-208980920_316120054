@@ -4,7 +4,7 @@
       <div class="form-group mx-sm-3 mb-2">
         <label for="searchInput" class="sr-only">Search</label>
         <input type="text" v-model="form.query" class="form-control" id="searchInput" placeholder="Search recipes" required>
-        <b-dropdown text="Filter" variant="filterButton" class="filterButton" size="sm">
+        <b-dropdown id="filter" text="Filter" variant="filterButton" class="button-20" size="sm">
           <div class="filter-section">
             <label for="numResults" class="filter-label">Number of Results:</label>
             <select v-model="numberofresults" id="numResults" class="filter-select">
@@ -29,10 +29,10 @@
           </div>
         </b-dropdown>
       </div>
-      <button @click="Search" type="submit" class="button-20" >Search</button>
+      <button id="search" @click="Search" type="submit" class="button-20" >Search</button>
     </form>
     <div class="spancontainer">
-    <span v-if="!searched" @click = "SearchLast" class="clicklastsearch" title = "Include last filters">Last search: {{ this.lastQuery.charAt(0).toUpperCase()+this.lastQuery.slice(1) }}</span> 
+    <span v-if="!searched && this.lastQuery && $root.store.username" @click = "SearchLast" class="clicklastsearch" title = "Include last filters">Last search: {{ this.lastQuery.charAt(0).toUpperCase()+this.lastQuery.slice(1) }}</span> 
     </div>
     <div v-if = "searched">
       <b-dropdown  text="Sort by" variant="success" class="filter-dropdown">
@@ -115,7 +115,6 @@ export default({
       dropdown.hide();
     },
     sort_recipes(){
-      console.log(this.recipes,this.selectedOptionsSort);
       if (this.selectedOptionsSort=="Popularity: low to high"){
         this.recipes.sort(function(a,b){
           return a.popularity-b.popularity;
@@ -154,15 +153,12 @@ export default({
     },
     async Search() {
         try {
-          console.log("search method called");
           const cuisines = this.get_string_from_list(this.selectedOptionsCuisines);
           const diets = this.get_string_from_list(this.selectedOptionsDiets);
           const intolerances = this.get_string_from_list(this.selectedOptionsIntolerances);
-          console.log(cuisines,diets,intolerances,this.numberofresults)
           
 
           const response = await this.axios.get(
-            // "https://test-for-3-2.herokuapp.com/user/Register",
             this.$root.store.server_domain + "/recipes/search",
             {
             params: {
@@ -188,7 +184,7 @@ export default({
 
           
         } catch (err) {
-          console.log(err.response);
+          // console.log(err.response);
           this.form.submitError = err.response.data.message;
         }
       }
@@ -210,158 +206,25 @@ export default({
   display: block;
   margin-bottom: 5px;
 }
-
-.filterButton {
-  appearance: button;
-  background-color: #42b983;
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0));
-  border: 1px solid #42b983;
-  border-radius: 1rem;
-  box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset,rgba(46, 54, 80, 0.075) 0 1px 1px;
-  box-sizing: border-box;
-  color: #b03838;
-  cursor: pointer;
-  display: inline-block;
-  font-family: Inter,sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.5;
-  margin: 0 0 0 1rem ;
-  padding: .3rem .3rem;
-  text-align: center;
-  text-transform: none;
-  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  ;
-}
-
-.filterButton:focus:not(:focus-visible),
-.filterButton:focus {
-  outline: 0;
-}
-
-.filterButton:hover {
-  background-color: #1aa508;
-  border-color: #1aa508;
-}
-
-.filterButton:focus {
-  background-color: #1aa508;
-  border-color: #1aa508;
-}
-
-.filterButton:active {
-  background-color: #1aa508;
-  background-image: none;
-  border-color: #1aa508;
-  box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset;
-}
-
-.filterButton:active:focus {
-  box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset, #1aa508 0 0 0 .2rem;
-}
-
-.filterButton:disabled {
-  background-image: none;
-  box-shadow: none;
-  opacity: .65;
-  pointer-events: none;
-}
-
-
-.filter-select {
-  width: 100%;
-}
-.clicklastsearch{
-  margin-right:3rem;
-}
-.clicklastsearch:hover{
-  cursor: pointer;
-  text-decoration: underline;
-  
-}
-.title{
-  text-align: center;
-  margin-top: 5vh;
-  
-}
-.form-inline{
-  display: flex;
-  justify-content: center;
-  margin-top: 10vh;
-}
-.form-control{
-  width: 30vw;
-  border-radius: 50px;
-}
-.spancontainer{
-  align-items: left;
-  margin-left: 18rem;
-  margin-top: 1vh;
-
-}
-
 .button-20 {
-  appearance: button;
   background-color: #42b983;
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0));
-  border: 1px solid #42b983;
-  border-radius: 1rem;
-  box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset,rgba(46, 54, 80, 0.075) 0 1px 1px;
-  box-sizing: border-box;
-  color: #FFFFFF;
-  cursor: pointer;
-  display: inline-block;
-  font-family: Inter,sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.5;
-  margin: 0;
-  padding: .5rem 1rem;
-  text-align: center;
-  text-transform: none;
-  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  margin-bottom: 0.3rem;
+  border: none; 
+  color: white; 
+  width: 10vw; 
+  border-radius: 3rem;
 }
-
-.button-20:focus:not(:focus-visible),
-.button-20:focus {
-  outline: 0;
-}
-
 .button-20:hover {
-  background-color: #1aa508;
-  border-color: #1aa508;
+  background-color: #2b7a4b; 
 }
-
-.button-20:focus {
-  background-color: #1aa508;
-  border-color: #1aa508;
+#filter{
+  margin-left: 2vw;
+  color: white;
 }
-
-.button-20:active {
-  background-color: #1aa508;
-  background-image: none;
-  border-color: #1aa508;
-  box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset;
+#search{
+  padding:0.5vh;
+  margin-bottom:1vh;
 }
-
-.button-20:active:focus {
-  box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset, #1aa508 0 0 0 .2rem;
+.btn{
+  color: white;
 }
-
-.button-20:disabled {
-  background-image: none;
-  box-shadow: none;
-  opacity: .65;
-  pointer-events: none;
-}
-
 </style>

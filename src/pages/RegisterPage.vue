@@ -27,7 +27,6 @@
       </b-form-group>
     <b-form-group
       id="input-group-firstName"
-      
       label-for="firstName"
     >
     <b-form-input
@@ -252,7 +251,6 @@ export default {
     },
     async Register() {
       try {
-        console.log("register method called");
         const response = await this.axios.post(
           // "https://test-for-3-2.herokuapp.com/user/Register",
           this.$root.store.server_domain + "/Register",
@@ -268,7 +266,7 @@ export default {
         );
         this.$router.push("/login");
       } catch (err) {
-        console.log(err.response);
+        // console.log(err.response);
         this.form.submitError = err.response.data.message;
       }
     },
