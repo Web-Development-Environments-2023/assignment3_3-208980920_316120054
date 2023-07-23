@@ -1,14 +1,15 @@
 <template>
   <div class="container">
-    <h1 class="title">Register</h1>
+    <h3 class="title">Create an account</h3>
     <b-form @submit.prevent="onRegister" @reset.prevent="onReset">
       <b-form-group
         id="input-group-username"
-        label-cols-sm="3"
-        label="Username:"
+        
         label-for="username"
       >
         <b-form-input
+          class="input"
+          placeholder="Enter username"
           id="username"
           v-model="$v.form.username.$model"
           type="text"
@@ -24,14 +25,64 @@
           Username alpha
         </b-form-invalid-feedback>
       </b-form-group>
-
+    <b-form-group
+      id="input-group-firstName"
+      label-for="firstName"
+    >
+    <b-form-input
+    class="input"
+    placeholder="Enter first name"
+      id="firstName"
+      v-model="$v.form.firstName.$model"
+      type="text"
+      :state="validateState('firstName')"
+    ></b-form-input>
+    <b-form-invalid-feedback v-if="!$v.form.firstName.required">
+      First Name is required
+    </b-form-invalid-feedback>
+    </b-form-group>
+    <b-form-group
+      id="input-group-lastName"
+      
+      label-for="lastName"
+    >
+    <b-form-input
+    class="input"
+    placeholder="Enter last name"
+      id="lastName"
+      v-model="$v.form.lastName.$model"
+      type="text"
+      :state="validateState('lastName')"
+    ></b-form-input>
+    <b-form-invalid-feedback v-if="!$v.form.lastName.required">
+      Last Name is required
+    </b-form-invalid-feedback>
+    </b-form-group>
+    <b-form-group
+      id="input-group-email"
+      
+      label-for="email"
+    >
+    <b-form-input
+    class="input"
+    placeholder="Enter email"
+      id="email"
+      v-model="$v.form.email.$model"
+      type="text"
+      :state="validateState('email')"
+    ></b-form-input>
+    <b-form-invalid-feedback v-if="!$v.form.email.required">
+      Email is required
+    </b-form-invalid-feedback>
+    </b-form-group>
       <b-form-group
         id="input-group-country"
-        label-cols-sm="3"
-        label="Country:"
+        
         label-for="country"
       >
         <b-form-select
+        class="input"
+        placeholder="Select a country"
           id="country"
           v-model="$v.form.country.$model"
           :options="countries"
@@ -44,11 +95,12 @@
 
       <b-form-group
         id="input-group-Password"
-        label-cols-sm="3"
-        label="Password:"
+        
         label-for="password"
       >
         <b-form-input
+        class="input"
+          placeholder="Enter password"
           id="password"
           type="password"
           v-model="$v.form.password.$model"
@@ -66,15 +118,22 @@
         >
           Have length between 5-10 characters long
         </b-form-invalid-feedback>
+        <b-form-invalid-feedback v-if="!$v.form.password.specialCharacter">
+          Have at least one special character
+        </b-form-invalid-feedback>
+        <b-form-invalid-feedback v-if="!$v.form.password.number">
+          Have at least one number
+        </b-form-invalid-feedback>
       </b-form-group>
 
       <b-form-group
         id="input-group-confirmedPassword"
-        label-cols-sm="3"
-        label="Confirm Password:"
+        
         label-for="confirmedPassword"
       >
         <b-form-input
+        class="input"
+          placeholder="Confirm password"
           id="confirmedPassword"
           type="password"
           v-model="$v.form.confirmedPassword.$model"
@@ -94,8 +153,7 @@
       <b-button
         type="submit"
         variant="primary"
-        style="width:250px;"
-        class="ml-5 w-75"
+        class="ml-5"
         >Register</b-button
       >
       <div class="mt-2">
@@ -112,10 +170,7 @@
     >
       Register failed: {{ form.submitError }}
     </b-alert>
-    <!-- <b-card class="mt-3 md-3" header="Form Data Result">
-      <pre class="m-0"><strong>form:</strong> {{ form }}</pre>
-      <pre class="m-0"><strong>$v.form:</strong> {{ $v.form }}</pre>
-    </b-card> -->
+
   </div>
 </template>
 
@@ -144,7 +199,7 @@ export default {
         email: "",
         submitError: undefined
       },
-      countries: [{ value: null, text: "", disabled: true }],
+      countries: [{ value: null, text: "Select a Country", disabled: true }],
       errors: [],
       validated: false
     };
@@ -156,23 +211,38 @@ export default {
         length: (u) => minLength(3)(u) && maxLength(8)(u),
         alpha
       },
+      firstName: {
+        required
+      },
+      lastName: {
+        required
+      },
       country: {
         required
       },
       password: {
         required,
-        length: (p) => minLength(5)(p) && maxLength(10)(p)
+        length: (p) => minLength(5)(p) && maxLength(10)(p),
+        //check if contains at least one speacial character
+        specialCharacter: (value) => /[!@#$%^&*(),.?":{}|<>]/.test(value),
+        //check if contains at least one number
+        number: (value) => /\d/.test(value),
       },
       confirmedPassword: {
         required,
         sameAsPassword: sameAs("password")
-      }
+      },
+      email: {
+        required,
+        email
     }
+  }
   },
+
   mounted() {
-    // console.log("mounted");
+
     this.countries.push(...countries);
-    // console.log($v);
+
   },
   methods: {
     validateState(param) {
@@ -187,23 +257,24 @@ export default {
 
           {
             username: this.form.username,
-            password: this.form.password
+            password: this.form.password,
+            firstName: this.form.firstName,
+            lastName: this.form.lastName,
+            country: this.form.country,
+            email: this.form.email,
           }
         );
         this.$router.push("/login");
-        // console.log(response);
       } catch (err) {
-        console.log(err.response);
+        // console.log(err.response);
         this.form.submitError = err.response.data.message;
       }
     },
     onRegister() {
-      // console.log("register method called");
       this.$v.form.$touch();
       if (this.$v.form.$anyError) {
         return;
       }
-      // console.log("register method go");
       this.Register();
     },
     onReset() {
@@ -221,10 +292,49 @@ export default {
       });
     }
   }
+
 };
 </script>
 <style lang="scss" scoped>
 .container {
   max-width: 500px;
+}
+.title{
+  font-size: 2.5rem;
+  text-align: center;
+
+}
+.input {
+  border-radius: 30px; 
+  padding: 8px 15px; 
+  width: 70%;
+  margin-right: 10rem;
+  max-width: 400;
+  margin-left:5rem;
+  
+}
+.btn-primary {
+  background-color: #42b983;
+  border: none; 
+  color: white; 
+  border-radius: 3rem;
+  margin-right: 0.5rem;
+  width:45%
+  
+}
+.btn-primary:hover {
+  background-color: #2b7a4b; 
+}
+.btn-danger{
+  border-radius: 3rem;
+  margin-left: 5rem;
+}
+.custom-select{
+  line-height: 1;
+  width:70%;
+}
+.mt-2{
+  text-align: center;
+  margin-top: 1rem;
 }
 </style>

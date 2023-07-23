@@ -2,17 +2,22 @@ import Vue from "vue";
 import App from "./App.vue";
 import VueAxios from "vue-axios";
 import axios from "axios";
-
+axios.defaults.withCredentials=true;
 import routes from "./routes";
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
 const router = new VueRouter({
   routes,
 });
+import BootstrapVue from 'bootstrap-vue';
+import '@fortawesome/fontawesome-free/css/all.css';
 
+Vue.use(BootstrapVue);
 import Vuelidate from "vuelidate";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
+
+
 import {
   FormGroupPlugin,
   FormPlugin,
@@ -24,6 +29,7 @@ import {
   AlertPlugin,
   ToastPlugin,
   LayoutPlugin,
+  BModal,
 } from "bootstrap-vue";
 [
   FormGroupPlugin,
@@ -67,19 +73,18 @@ Vue.use(VueAxios, axios);
 Vue.config.productionTip = false;
 
 const shared_data = {
+  // server_domain: "http://localhost:3000",
+  server_domain: "https://roi-tal.cs.bgu.ac.il",
   username: localStorage.username,
   login(username) {
     localStorage.setItem("username", username);
     this.username = username;
-    console.log("login", this.username);
   },
   logout() {
-    console.log("logout");
     localStorage.removeItem("username");
     this.username = undefined;
   },
 };
-console.log(shared_data);
 // Vue.prototype.$root.store = shared_data;
 
 new Vue({

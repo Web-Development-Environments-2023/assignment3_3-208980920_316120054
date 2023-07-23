@@ -1,16 +1,21 @@
 <template>
   <b-container>
-    <h3>
-      {{ title }}:
-      <slot></slot>
-    </h3>
-    <b-row>
-      <b-col v-for="r in recipes" :key="r.id">
-        <RecipePreview class="recipePreview" :recipe="r" />
+    <b-row v-if="!isMainPage">
+      <b-col cols="4" v-for="(r, index) in recipes" :key="r.id">
+        <RecipePreview class="recipePreview" :recipe="r" :isApi="isApi" :isMyPage="isMyPage" />
+        <!-- Add a conditional line break after every 3 recipes -->
+        <br v-if="index % 3 === 2 && index !== recipes.length - 1" />
       </b-col>
     </b-row>
+    <b-col v-else>
+      <b-row v-for="recipe in recipes" :key="recipe.id">
+        <RecipePreview class="recipePreview" :recipe="recipe" :isApi="isApi" :isMyPage="isMyPage"/>
+        <br>
+      </b-row>
+      </b-col>
   </b-container>
 </template>
+
 
 <script>
 import RecipePreview from "./RecipePreview.vue";
@@ -20,42 +25,38 @@ export default {
     RecipePreview
   },
   props: {
-    title: {
-      type: String,
+    recipes: {
+      type: Array,
       required: true
+    },
+    isApi: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
+    isMainPage: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    isMyPage:{
+      type:Boolean,
+      reqiured:false,
+      defaule:false
     }
   },
-  data() {
-    return {
-      recipes: []
-    };
-  },
-  mounted() {
-    this.updateRecipes();
-  },
-  methods: {
-    async updateRecipes() {
-      try {
-        const response = await this.axios.get(
-          this.$root.store.server_domain + "/recipes/random",
-          // "https://test-for-3-2.herokuapp.com/recipes/random"
-        );
-
-        // console.log(response);
-        const recipes = response.data.recipes;
-        this.recipes = [];
-        this.recipes.push(...recipes);
-        // console.log(this.recipes);
-      } catch (error) {
-        console.log(error);
-      }
-    }
+  mounted(){
   }
+
+  
 };
 </script>
 
 <style lang="scss" scoped>
-.container {
-  min-height: 400px;
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
 }
+
 </style>
